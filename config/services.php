@@ -14,11 +14,6 @@ return [
     |
     */
 
-    'openai' => [
-        'classify_enabled' => env('OPENAI_CLASSIFY_ENABLED', false),
-        'api_key' => env('OPENAI_API_KEY'),
-    ],
-
     'postmark' => [
         'token' => env('POSTMARK_TOKEN'),
     ],
