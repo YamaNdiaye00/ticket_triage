@@ -15,6 +15,7 @@ class Ticket extends Model
 
     protected $fillable = [
         'subject', 'body', 'status', 'category', 'note', 'explanation', 'confidence',
+        'manual_category_at', 'classified_at',
     ];
 
     protected $casts = ['confidence' => 'float'];

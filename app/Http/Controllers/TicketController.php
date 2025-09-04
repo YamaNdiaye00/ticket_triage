@@ -2,21 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\ClassifyTicket;
 use App\Models\Ticket;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use App\Jobs\TicketClassificationJob;
 
 class TicketController extends Controller
 {
     // GET /tickets
     public function index(Request $request): JsonResponse
     {
-        $q        = $request->string('q')->toString();
-        $status   = $request->string('status')->toString();
+        $q = $request->string('q')->toString();
+        $status = $request->string('status')->toString();
         $category = $request->string('category')->toString();
-        $perPage  = (int) $request->get('per_page', 10);
+        $perPage = (int)$request->get('per_page', 10);
 
         $query = Ticket::query();
 
@@ -46,16 +46,16 @@ class TicketController extends Controller
     public function store(Request $request): JsonResponse
     {
         $data = $request->validate([
-            'subject'  => ['required', 'string', 'max:200'],
-            'body'     => ['required', 'string'],
+            'subject' => ['required', 'string', 'max:200'],
+            'body' => ['required', 'string'],
             'category' => ['nullable', 'string', 'max:50'],
         ]);
 
         $ticket = Ticket::create([
             'subject' => $data['subject'],
-            'body'    => $data['body'],
-            'status'  => 'new',
-            'category'=> $data['category'] ?? null,
+            'body' => $data['body'],
+            'status' => 'new',
+            'category' => $data['category'] ?? null,
             // note/explanation/confidence null by default
         ]);
 
@@ -72,12 +72,21 @@ class TicketController extends Controller
     public function update(Request $request, Ticket $ticket): JsonResponse
     {
         $data = $request->validate([
-            'status'   => ['sometimes', 'string', Rule::in(Ticket::STATUSES)],
+            'status' => ['sometimes', 'string', Rule::in(Ticket::STATUSES)],
             'category' => ['sometimes', 'nullable', 'string', 'max:50'],
-            'note'     => ['sometimes', 'nullable', 'string'],
+            'note' => ['sometimes', 'nullable', 'string'],
         ]);
 
-        $ticket->fill($data)->save();
+        $categoryProvided = array_key_exists('category', $data);
+
+        $ticket->fill($data);
+
+        // If category was provided and will change, mark manual override
+        if ($categoryProvided && $ticket->isDirty('category')) {
+            $ticket->manual_category_at = now();
+        }
+
+        $ticket->save();
 
         return response()->json($ticket);
     }
@@ -86,7 +95,7 @@ class TicketController extends Controller
     public function classify(Ticket $ticket): JsonResponse
     {
         // Queue the classification job (sync by default unless queue driver changed)
-        TicketClassificationJob::dispatch($ticket);
+        ClassifyTicket::dispatch($ticket);
 
         return response()->json([
             'queued' => true,
