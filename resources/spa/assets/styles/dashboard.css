@@ -1,0 +1,25 @@
+.dashboard {
+    padding: 1rem;
+    display: grid;
+    gap: 1rem;
+}
+
+.dashboard__cards {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.dashboard__card {
+    border: 1px solid #ddd;
+    border-radius: .5rem;
+    padding: .75rem;
+    flex: 1;
+    min-width: 120px;
+    text-align: center;
+}
+
+.dashboard__chart {
+    max-width: 400px;
+    margin: auto;
+}

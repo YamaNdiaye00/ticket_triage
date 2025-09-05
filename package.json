@@ -4,11 +4,16 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
-        "dev": "vite"
+        "dev": "vite",
+        "dev:api": "php artisan serve --host=127.0.0.1 --port=8000",
+        "dev:web": "vite",
+        "dev:full": "concurrently -k -n API,WEB -c green,cyan \"npm:dev:api\" \"npm:dev:web\"",
+        "dev:build": "npm run build && npm run dev:full"
     },
     "devDependencies": {
         "@vitejs/plugin-vue": "^6.0.1",
         "axios": "^1.11.0",
+        "concurrently": "^9.2.1",
         "vite": "^7.1.4"
     },
     "name": "ticket_triage",

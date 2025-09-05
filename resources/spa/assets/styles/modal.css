@@ -1,0 +1,35 @@
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .35);
+    display: grid;
+    place-items: center;
+}
+
+.modal__dialog {
+    background: #fff;
+    padding: 1rem;
+    border-radius: .5rem;
+    width: min(600px, 90vw);
+}
+
+.modal__title {
+    margin: 0 0 .5rem;
+}
+
+.modal__label {
+    display: block;
+    margin: .5rem 0;
+}
+
+.modal__input, .modal__textarea {
+    width: 100%;
+    padding: .5rem;
+}
+
+.modal__actions {
+    display: flex;
+    gap: .5rem;
+    justify-content: flex-end;
+    margin-top: .5rem;
+}

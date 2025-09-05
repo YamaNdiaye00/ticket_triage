@@ -1,0 +1,9 @@
+/* Global resets & helpers (not BEM) */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: system-ui, Arial, sans-serif;
+}
