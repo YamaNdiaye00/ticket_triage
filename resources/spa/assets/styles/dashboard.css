@@ -1,25 +1,57 @@
 .dashboard {
     padding: 1rem;
     display: grid;
-    gap: 1rem;
+    gap: 1.25rem;
+
+    max-width: 900px;
+    margin: 0 auto;
+    justify-items: center; /* center child items horizontally */
+}
+
+.dashboard__title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.dashboard__group {
+    display: grid;
+    gap: .5rem;
+}
+
+.dashboard__subtitle {
+    margin: 0;
+    font-size: 1rem;
+    color: #444;
 }
 
 .dashboard__cards {
     display: flex;
-    gap: 1rem;
     flex-wrap: wrap;
+    gap: .5rem;
 }
 
 .dashboard__card {
     border: 1px solid #ddd;
     border-radius: .5rem;
-    padding: .75rem;
-    flex: 1;
+    padding: .6rem .75rem;
     min-width: 120px;
     text-align: center;
+    background: #fafafa;
+}
+
+.dashboard__card-key {
+    font-size: .85rem;
+    color: #666;
+}
+
+.dashboard__card-val {
+    font-size: 1.25rem;
+    font-weight: 700;
 }
 
 .dashboard__chart {
-    max-width: 400px;
-    margin: auto;
+    border: 1px solid #eee;
+    border-radius: .5rem;
+    padding: .75rem;
 }
