@@ -1,23 +1,122 @@
+/* Block */
 .ticket-show {
     padding: 1rem;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* Header */
+.ticket-show__header {
+    margin-bottom: 1rem;
 }
 
 .ticket-show__subject {
+    margin: 0 0 .25rem;
     font-size: 1.25rem;
-    font-weight: 600;
+    font-weight: 700;
 }
 
 .ticket-show__body {
-    margin-top: .5rem;
+    margin: 0;
+    color: #333;
 }
 
-.ticket-show__meta {
+/* Read-only AI area */
+.ticket-show__ai {
     margin-top: 1rem;
+    display: grid;
+    grid-template-columns: 2fr 1fr; /* explanation | confidence */
+    gap: .75rem;
+}
+
+.ticket-show__field {
     display: flex;
     flex-direction: column;
-    gap: .5rem;
+    gap: .25rem;
+}
+
+.ticket-show__label {
+    font-size: .85rem;
+    color: #555;
+}
+
+.ticket-show__value {
+    font-weight: 600;
+}
+
+.ticket-show__explain {
+    background: #fafafa;
+    border: 1px solid #eee;
+    border-radius: .5rem;
+    padding: .5rem;
+    min-height: 2.25rem;
+    white-space: pre-wrap;
+}
+
+/* Editable area */
+.ticket-show__edit {
+    margin-top: 1rem;
+    display: grid;
+    gap: 1rem;
+}
+
+.ticket-show__select,
+.ticket-show__textarea {
+    width: 100%;
+    padding: .5rem;
+    border: 1px solid #ccc;
+    border-radius: .5rem;
+}
+
+/* Live validation styles */
+.ticket-show__field--error .ticket-show__select,
+.ticket-show__field--error .ticket-show__textarea {
+    border-color: #d93025;
+    background: #fff6f5;
+}
+
+.ticket-show__error {
+    color: #d93025;
+    font-size: .85rem;
 }
 
 .ticket-show__note {
-    margin-top: 1rem;
+    margin-top: .5rem;
+}
+
+.ticket-show__actions {
+    margin-top: .5rem;
+    display: flex;
+    gap: .5rem;
+    align-items: center;
+}
+
+.ticket-show__btn {
+    padding: .45rem .8rem;
+    border: 1px solid #bbb;
+    border-radius: .5rem;
+    background: #f7f7f7;
+    cursor: pointer;
+}
+
+.ticket-show__btn:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+}
+
+.ticket-show__link {
+    margin-left: auto;
+    text-decoration: underline;
+}
+
+.ticket-show__counter {
+    margin-left: .5rem;
+    font-weight: 500;
+    color: #666;
+}
+
+.ticket-show__loading {
+    padding: 1rem;
+    text-align: center;
+    color: #666;
 }
