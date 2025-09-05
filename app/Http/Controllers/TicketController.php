@@ -18,14 +18,21 @@ class TicketController extends Controller
         $category = $request->string('category')->toString();
         $perPage = (int)$request->get('per_page', 10);
 
-        $query = Ticket::query();
+        $query = Ticket::query()
+            // 1) search on subject/body
+            ->when($q !== '', function ($qq) use ($q) {
+                $qq->where(function ($w) use ($q) {
+                    $w->where('subject', 'like', "%{$q}%")
+                        ->orWhere('body', 'like', "%{$q}%");
+                });
+            })
 
-        if ($q !== '') {
-            $query->where(function ($w) use ($q) {
-                $w->where('subject', 'like', "%{$q}%")
-                    ->orWhere('body', 'like', "%{$q}%");
-            });
-        }
+            // 2) filters
+            ->when($status, fn($qq) => $qq->where('status', $status))
+            ->when($category, fn($qq) => $qq->where('category', $category))
+
+            // 3) sort by most recent
+            ->orderByDesc('created_at');
 
         if ($status !== '') {
             $query->where('status', $status);
@@ -35,11 +42,24 @@ class TicketController extends Controller
             $query->where('category', $category);
         }
 
-        $query->orderByDesc('created_at');
+        // From most recently updated to last.
+        // Change column as the user wishes
+        $query->orderByDesc('updated_at');
 
-        return response()->json(
-            $query->paginate($perPage)->appends($request->query())
-        );
+        $p = $query->paginate($perPage); // uses ?page= automatically
+
+        // Normalize the paginator to { data, meta } so the FE is simple
+        return response()->json([
+            'data' => $p->items(),
+            'meta' => [
+                'current_page' => $p->currentPage(),
+                'last_page' => $p->lastPage(),
+                'per_page' => $p->perPage(),
+                'total' => $p->total(),
+                'from' => $p->firstItem(),
+                'to' => $p->lastItem(),
+            ],
+        ]);
     }
 
     // POST /tickets

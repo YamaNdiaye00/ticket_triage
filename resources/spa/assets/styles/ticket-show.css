@@ -1,0 +1,23 @@
+.ticket-show {
+    padding: 1rem;
+}
+
+.ticket-show__subject {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.ticket-show__body {
+    margin-top: .5rem;
+}
+
+.ticket-show__meta {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+}
+
+.ticket-show__note {
+    margin-top: 1rem;
+}
