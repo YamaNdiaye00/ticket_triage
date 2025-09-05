@@ -1,0 +1,49 @@
+/* Block */
+.app-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: .75rem 1rem;
+    border-bottom: 1px solid #e5e5e5;
+    background: #fff;
+}
+
+/* Elements */
+.app-header__title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.app-header__nav {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+}
+
+.app-header__link {
+    display: inline-block;
+    padding: .35rem .6rem;
+    border: 1px solid transparent;
+    border-radius: .5rem;
+    text-decoration: none;
+    color: #1a56db;
+}
+
+.app-header__link:hover {
+    text-decoration: underline;
+}
+
+.app-header__btn {
+    padding: .35rem .6rem;
+    border: 1px solid #d0d0d0;
+    border-radius: .5rem;
+    background: #f7f7f7;
+    cursor: pointer;
+}
+
+.app-header__btn:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+}
