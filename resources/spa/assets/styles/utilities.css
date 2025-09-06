@@ -1,0 +1,55 @@
+/* ---------- Generic buttons (theme-aware) ---------- */
+.ui-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: .35rem .75rem;
+    border: 1px solid var(--btn-border);
+    border-radius: .5rem;
+    background: var(--btn-bg);
+    color: var(--btn-fg);
+
+    font-size: .9rem;
+    line-height: 1;
+    cursor: pointer;
+    user-select: none;
+
+    transition: background .2s, color .2s, border-color .2s, box-shadow .2s;
+}
+
+.ui-btn:hover:not(:disabled) {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+}
+
+.ui-btn:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px color-mix(in oklab, var(--primary) 50%, transparent);
+}
+
+.ui-btn:disabled {
+    background: var(--btn-disabled-bg);
+    color: var(--btn-disabled-fg);
+    border-color: var(--btn-border);
+    cursor: not-allowed;
+}
+
+/* Size helper (optional) */
+.ui-btn--sm {
+    padding: .25rem .5rem;
+    font-size: .85rem;
+}
+
+/* Variant (optional “ghost” action link) */
+.ui-btn--ghost {
+    background: transparent;
+    color: var(--fg);
+}
+
+.ui-btn--ghost:hover:not(:disabled) {
+    background: var(--surface-2);
+    color: var(--fg);
+    border-color: var(--border);
+}
