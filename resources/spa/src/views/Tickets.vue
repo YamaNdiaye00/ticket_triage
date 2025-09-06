@@ -107,6 +107,13 @@
                         <input class="modal__input" v-model.trim="form.subject" maxlength="200" required/>
                     </label>
 
+                    <label class="modal__label">Category
+                        <select class="modal__input" v-model="form.category">
+                            <option value="">N/A</option>
+                            <option v-for="c in categories" :key="c" :value="c">{{ c }}</option>
+                        </select>
+                    </label>
+
                     <label class="modal__label">Body
                         <textarea class="modal__textarea" v-model.trim="form.body" rows="4" required></textarea>
                     </label>
@@ -134,7 +141,7 @@ export default {
             page: 1, items: [], meta: null,
             loading: false, loadingId: null,
             showNew: false,
-            form: {subject: "", body: ""},
+            form: {subject: '', body: '', category: ''},
             // You can derive these from backend later; hard-coded here for clarity
             statuses: ["new", "open", "pending", "closed"],
             categories: ["Billing", "Technical", "Account", "Other"],
@@ -192,10 +199,12 @@ export default {
             }
         },
         async create() {
-            if (!this.form.subject || !this.form.body) return;
-            const {data} = await this.$api.post("/tickets", {
-                subject: this.form.subject, body: this.form.body,
-            });
+            const payload = {
+                subject: this.form.subject,
+                body: this.form.body,
+                category: this.form.category === '' ? null : this.form.category,
+            };
+            const {data} = await this.$api.post('/tickets', payload);
             this.items.unshift(data); // optimistic add to top
             this.showNew = false;
             this.form = {subject: "", body: ""};

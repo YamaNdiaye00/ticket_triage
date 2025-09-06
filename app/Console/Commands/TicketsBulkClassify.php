@@ -51,7 +51,8 @@ class TicketsBulkClassify extends Command
         if ($onlyMissing) {
             $query->where(function ($q) {
                 $q->whereNull('explanation')
-                    ->orWhereNull('confidence');
+                    ->orWhereNull('confidence')
+                    ->orWhereNull('category');;
             });
         }
 
