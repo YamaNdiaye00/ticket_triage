@@ -69,16 +69,21 @@ class TicketController extends Controller
         $data = $request->validate([
             'subject' => ['required', 'string', 'max:200'],
             'body' => ['required', 'string'],
-            'category' => ['nullable', 'string', 'max:50'],
+            'category' => ['nullable', 'string', 'in:Billing,Technical,Account,Other'], // allow null
         ]);
 
-        $ticket = Ticket::create([
+        $attrs = [
             'subject' => $data['subject'],
             'body' => $data['body'],
             'status' => 'new',
             'category' => $data['category'] ?? null,
-            // note/explanation/confidence null by default
-        ]);
+        ];
+
+        if (array_key_exists('category', $data)) {
+            $attrs['manual_category_at'] = $data['category'] ? now() : null;
+        }
+
+        $ticket = Ticket::create($attrs);
 
         return response()->json($ticket, 201);
     }
@@ -98,19 +103,25 @@ class TicketController extends Controller
     // PATCH /tickets/{id}
     public function update(Request $request, Ticket $ticket): JsonResponse
     {
-        $data = $request->validate([
+        $validated = $request->validate([
             'status' => ['sometimes', 'string', Rule::in(Ticket::STATUSES)],
-            'category' => ['sometimes', 'nullable', 'string', 'max:50'],
+            'category' => ['sometimes', 'nullable', 'string', 'in:Billing,Technical,Account,Other', 'max:50'],
             'note' => ['sometimes', 'nullable', 'string'],
         ]);
 
-        $categoryProvided = array_key_exists('category', $data);
+        // Apply fields
+        if (array_key_exists('status', $validated)) {
+            $ticket->status = $validated['status'];
+        }
 
-        $ticket->fill($data);
+        if (array_key_exists('note', $validated)) {
+            $ticket->note = $validated['note'];
+        }
 
-        // If category was provided and will change, mark manual override
-        if ($categoryProvided && $ticket->isDirty('category')) {
-            $ticket->manual_category_at = now();
+        if (array_key_exists('category', $validated)) {
+            $ticket->category = $validated['category']; // can be null
+            // Manual override clock: set when non-null, clear when null
+            $ticket->manual_category_at = is_null($validated['category']) ? null : now();
         }
 
         $ticket->save();
@@ -133,8 +144,8 @@ class TicketController extends Controller
     // GET /tickets/export
     public function export(Request $request): StreamedResponse
     {
-        $q        = trim((string) $request->query('q', ''));
-        $status   = $request->query('status');
+        $q = trim((string)$request->query('q', ''));
+        $status = $request->query('status');
         $category = $request->query('category');
 
         $query = Ticket::query()
@@ -144,24 +155,24 @@ class TicketController extends Controller
                         ->orWhere('body', 'like', "%{$q}%");
                 });
             })
-            ->when($status,   fn($qq) => $qq->where('status',   $status))
+            ->when($status, fn($qq) => $qq->where('status', $status))
             ->when($category, fn($qq) => $qq->where('category', $category))
             ->orderByDesc('created_at');
 
         $filename = 'tickets_export_' . now()->format('Ymd_His') . '.csv';
 
         $headers = [
-            'Content-Type'        => 'text/csv; charset=UTF-8',
+            'Content-Type' => 'text/csv; charset=UTF-8',
             'Content-Disposition' => "attachment; filename=\"{$filename}\"",
-            'Cache-Control'       => 'no-store, no-cache, must-revalidate',
+            'Cache-Control' => 'no-store, no-cache, must-revalidate',
         ];
 
-        $columns = ['id','created_at','subject','status','category','confidence','note','explanation'];
+        $columns = ['id', 'created_at', 'subject', 'status', 'category', 'confidence', 'note', 'explanation'];
 
         return response()->streamDownload(function () use ($query, $columns) {
             $out = fopen('php://output', 'w');
             // UTF-8 BOM for Excel compatibility (optional)
-            fprintf($out, chr(0xEF).chr(0xBB).chr(0xBF));
+            fprintf($out, chr(0xEF) . chr(0xBB) . chr(0xBF));
             fputcsv($out, $columns);
 
             $query->chunk(100, function ($rows) use ($out, $columns) {

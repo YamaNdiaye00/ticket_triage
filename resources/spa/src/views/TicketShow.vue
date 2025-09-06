@@ -33,9 +33,9 @@
                     class="ticket-show__select"
                     v-model="edit.category"
                     :disabled="busy"
-                    @change="onCategoryChange"
-                    aria-invalid="true"
+                    :aria-invalid="!!errors.category"
                     :aria-errormessage="errors.category ? 'category-error' : null"
+                    @input="validateField('category')"
                 >
                     <option :value="null">—</option>
                     <option v-for="c in categories" :key="c" :value="c">{{ c }}</option>
@@ -56,8 +56,8 @@
                 <label class="ticket-show__label" for="note">
                     Internal note
                     <span class="ticket-show__counter">
-            {{ edit.note.length }} / {{ NOTE_MAX }}
-          </span>
+        {{ edit.note.length }} / {{ NOTE_MAX }}
+      </span>
                 </label>
 
                 <textarea
@@ -66,10 +66,10 @@
                     rows="5"
                     v-model.trim="edit.note"
                     :disabled="busy"
-                    @input="validateField('note')"
                     :aria-invalid="!!errors.note"
                     :aria-errormessage="errors.note ? 'note-error' : null"
                     placeholder="Add details for teammates…"
+                    @input="validateField('note')"
                 ></textarea>
 
                 <small
@@ -80,27 +80,28 @@
                 >{{ errors.note }}</small>
 
                 <div class="ticket-show__actions">
+                    <!-- Single SAVE for category + note -->
                     <button
                         class="ticket-show__btn ui-btn"
                         type="button"
-                        :disabled="noteSaving || !noteDirty"
-                        @click="saveNote"
+                        :disabled="!canSave"
+                        @click="saveBoth"
                     >
-                        Save note
+                        {{ busy ? 'Saving…' : 'Save' }}
                     </button>
 
+                    <!-- Correctly wired classification -->
                     <button
                         class="ticket-show__btn ui-btn"
                         type="button"
                         :disabled="classifying"
-                        @click="classify(id)"
+                        @click="runClassify"
                     >
-                        Run Classification
+                        {{ classifying ? 'Classifying…' : 'Run Classification' }}
                     </button>
 
                     <router-link class="ticket-show__link" to="/tickets">Back to list</router-link>
                 </div>
-
             </div>
         </div>
     </section>
@@ -124,7 +125,7 @@ export default {
             edit: {category: null, note: ""},
             categories: ["Billing", "Technical", "Account", "Other"],
             busy: false,
-            lastAction: null,
+            classifying: false,
             errors: {category: null, note: null},
             NOTE_MAX: 500,
         };
@@ -138,8 +139,12 @@ export default {
         }
     },
     computed: {
-        isNoteDirty() {
-            return (this.t ? (this.edit.note !== (this.t.note || "")) : false);
+        // Save is allowed unless a validation fails or we’re mid-request
+        canSave() {
+            return !this.busy && !this.errors.category && !this.errors.note;
+        },
+        fmtConf() {
+            return c => (typeof c === "number" ? c.toFixed(2) : "—");
         }
     },
     methods: {
@@ -150,6 +155,11 @@ export default {
             try {
                 const {data} = await this.$api.get(`/tickets/${this.$route.params.id}`);
                 this.t = data;
+                // Prefill form from server
+                this.edit.category = data.category ?? null;
+                this.edit.note = data.note || "";
+                // Validate current values so Save reflects state immediately
+                this.validateAll();
             } catch (err) {
                 if (err.response && err.response.status === 404) {
                     this.error = "Ticket not found";
@@ -158,56 +168,42 @@ export default {
                 }
             }
         },
-        async onCategoryChange() {
-            // Live-validate first; only PATCH if valid and changed
-            this.validateField('category');
-            if (this.errors.category) return;
-            if ((this.t.category || null) === (this.edit.category || null)) return;
+
+        // Single save for category + note
+        async saveBoth() {
+            this.validateAll();
+            if (this.errors.category || this.errors.note) return;
 
             this.busy = true;
-            this.lastAction = "category";
             try {
-                await this.$api.patch(`/tickets/${this.t.id}`, {category: this.edit.category});
-                await this.load();
+                const payload = {
+                    category: this.edit.category, // null allowed
+                    note: this.edit.note || null
+                };
+                const {data} = await this.$api.patch(`/tickets/${this.t.id}`, payload);
+                this.t = data;
+                // Re-sync form
+                this.edit.category = data.category ?? null;
+                this.edit.note = data.note || "";
+                this.validateAll();
             } finally {
                 this.busy = false;
-                this.lastAction = null;
             }
         },
-        async saveNote() {
-            this.validateField('note');
-            if (this.errors.note) return;
-            if (!this.isNoteDirty) return;
 
-            this.busy = true;
-            this.lastAction = "note";
-            try {
-                await this.$api.patch(`/tickets/${this.t.id}`, {note: this.edit.note || null});
-                await this.load();
-            } finally {
-                this.busy = false;
-                this.lastAction = null;
-            }
-        },
+        // Correct classify call + quick refresh (or polling if you prefer)
         async runClassify() {
-            // You can still classify with an empty/unchanged note; category must be valid.
             this.validateField('category');
             if (this.errors.category) return;
 
-            this.busy = true;
-            this.lastAction = "classify";
+            this.classifying = true;
             try {
                 await this.$api.post(`/tickets/${this.t.id}/classify`);
-                await this.load(); // sync queue updates immediately
+                // quick sync; if jobs are async you can poll until explanation appears
+                await this.load();
             } finally {
-                this.busy = false;
-                this.lastAction = null;
+                this.classifying = false;
             }
-        },
-
-        // -------- formatting --------
-        fmtConf(c) {
-            return typeof c === "number" ? c.toFixed(2) : "—";
         },
 
         // -------- validation (live) --------
@@ -217,23 +213,18 @@ export default {
         },
         validateField(field) {
             if (field === 'category') {
-                // allowed: null/empty OR one of categories
                 const val = this.edit.category;
-                if (val === null || val === "" || this.categories.includes(val)) {
-                    this.errors.category = null;
-                } else {
-                    this.errors.category = "Invalid category.";
-                }
+                this.errors.category =
+                    (val === null || this.categories.includes(val)) ? null : "Invalid category.";
             }
             if (field === 'note') {
                 const val = this.edit.note || "";
-                if (val.length > this.NOTE_MAX) {
-                    this.errors.note = `Note is too long (max ${this.NOTE_MAX} characters).`;
-                } else {
-                    this.errors.note = null;
-                }
+                this.errors.note = (val.length > this.NOTE_MAX)
+                    ? `Note is too long (max ${this.NOTE_MAX} characters).`
+                    : null;
             }
         },
     },
 };
+
 </script>
