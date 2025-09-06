@@ -1,27 +1,32 @@
 # Ticket Triage System
 
 ## Project Description
-The **Ticket Triage System** is a production-style **Laravel 11 + Vue 3** single-page application designed to help a help-desk team manage incoming support tickets efficiently.  
+The **Ticket Triage System** is a production-style **Laravel 11 + Vue 3 SPA** designed to help a help-desk team manage incoming support tickets efficiently.
 
 **Purpose**  
 - Automate ticket classification using AI (OpenAI API), reducing manual workload.  
 - Provide a backend API with CRUD operations, classification, and stats for frontend dashboards.  
 - Support manual overrides while still giving AI-powered confidence and explanations.  
+- Provide a modern, responsive Vue 3 frontend for staff to triage tickets quickly.
 
-**Functionality**  
-- **Tickets CRUD**: Create, update, list, and view support tickets.  
-- **AI-driven classification**: Categorizes tickets into `Billing`, `Technical`, `Account`, or `Other`, with explanation and confidence.  
-- **Manual override**: If staff changes category, AI will not overwrite it, but will still add explanation and confidence.  
-- **Bulk classify**: Artisan command to classify all tickets missing AI data.  
-- **Stats endpoint**: Provides counts for dashboard charts.  
-- **Rate limiting**: Protects `/stats` (30 requests/min) and `/classify` (10 requests/min) from abuse.  
+**Functionality**
+- **Tickets CRUD**: Create, update, list, and view support tickets with search, filtering, pagination, and input validations.
+- **AI-driven classification**: Categorizes tickets into `Billing`, `Technical`, `Account`, or `Other`, with explanation and confidence.
+- **Manual override**: If staff changes category, AI will not overwrite it, but will still add explanation and confidence.
+- **Bulk classify**: Artisan command to classify all tickets missing AI data (`--only-missing`).
+- **Stats endpoint**: Provides counts for dashboard charts.
+- **Dashboard & charts**: Ticket counts by status & category with a simple Chart.js chart.
+- **CSV export**: Modal with filters (download support in progress).
+- **Dark/Light theme toggle**: Project-wide via CSS variables.
+- **Rate limiting**: Protects `/stats` (30 requests/min) and `/classify` (10 requests/min) from abuse.
 
 **Effectiveness**  
-- Reduces manual triage effort by auto-classifying routine tickets.  
-- Provides transparency with explanations and confidence scores.  
-- Includes safe fallbacks (random dummy results when AI disabled).  
-- Clean separation of concerns (services, jobs, routes) for maintainability.  
-- Lightweight frontend integration (Vue 3 SPA with minimal dependencies).  
+- Reduces manual triage effort by auto-classifying routine tickets.
+- Provides transparency with explanations and confidence scores.
+- Staff can override AI and add notes cleanly.
+- Includes safe fallbacks (random dummy results when AI disabled).
+- Clean separation of concerns (services, jobs, routes, Vue frontend).
+- Lightweight, maintainable architecture (Options API, plain CSS with BEM).
 
 ---
 
@@ -97,7 +102,7 @@ To make HTTPS requests to `api.openai.com`, PHP’s cURL/openssl must trust a ce
 - `axios` (API calls)
 - `vue-router` (routing)
 - `chart.js` (charts)  
-> No CSS frameworks (use plain CSS with BEM).  
+> No CSS frameworks (plain CSS with **BEM** conventions only).
 
 ---
 
@@ -169,10 +174,10 @@ OPENAI_CLASSIFY_MODEL=gpt-4o-mini
    ```bash
    php artisan serve
    ```
-9. Test endpoints:
-   - `GET /api/tickets`
-   - `POST /api/tickets/{id}/classify`
-   - `GET /api/stats`
+9. Access app:
+    - Visit `http://127.0.0.1:8000/tickets` → Ticket list UI
+    - Visit `http://127.0.0.1:8000/dashboard` → Dashboard with stats and chart
+    - API endpoints also available under `/api/*`
 10. (Optional) Bulk classify missing:
    ```bash
    php artisan tickets:bulk-classify --only-missing
@@ -190,3 +195,7 @@ OPENAI_CLASSIFY_MODEL=gpt-4o-mini
   - If `OPENAI_CLASSIFY_ENABLED=false` → generates random category + dummy explanation/confidence.  
 - `ClassifyTicket` job respects manual category overrides.  
 - `/stats` limited to **30 req/min**, `/tickets/{id}/classify` limited to **10 req/min**.  
+- **Frontend**:
+    - Built with Vue 3 Options API.
+    - CSS is BEM-compliant and organized per feature (ticket-list, ticket-show, dashboard, modal, etc).
+    - Single Vite build, served from Laravel’s `/public/spa` with proper fallback route.  
