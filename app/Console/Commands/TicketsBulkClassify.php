@@ -37,10 +37,10 @@ class TicketsBulkClassify extends Command
      */
     public function handle(): int
     {
-        $onlyMissing = (bool) $this->option('only-missing');
-        $force       = (bool) $this->option('force');
-        $limitOpt    = $this->option('limit');
-        $limit       = is_numeric($limitOpt) ? (int) $limitOpt : null;
+        $onlyMissing = (bool)$this->option('only-missing');
+        $force = (bool)$this->option('force');
+        $limitOpt = $this->option('limit');
+        $limit = is_numeric($limitOpt) ? (int)$limitOpt : null;
 
         if ($force) {
             $onlyMissing = false;

@@ -74,9 +74,9 @@ class TicketController extends Controller
 
         $attrs = [
             'subject' => $data['subject'],
-            'body'    => $data['body'],
-            'status'  => 'new',
-            'category'=> $data['category'] ?? null,
+            'body' => $data['body'],
+            'status' => 'new',
+            'category' => $data['category'] ?? null,
         ];
 
         if (array_key_exists('category', $data)) {
