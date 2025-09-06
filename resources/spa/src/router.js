@@ -10,6 +10,8 @@ const routes = [
     {path: "/tickets", component: Tickets},
     {path: "/tickets/:id", component: TicketShow, props: true},
     {path: "/dashboard", component: Dashboard},
+    // catch-all: redirect invalid routes to /tickets
+    { path: "/:pathMatch(.*)*", redirect: "/tickets" },
 ];
 
 export default createRouter({

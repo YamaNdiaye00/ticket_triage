@@ -104,7 +104,13 @@
         </div>
     </section>
 
-    <div v-else class="ticket-show__loading">Loading…</div>
+    <div v-else-if="error" class="ticket-show__error">
+        {{ error }}
+    </div>
+
+    <div v-else class="ticket-show__loading">
+        Loading…
+    </div>
 </template>
 
 <script>
@@ -113,6 +119,7 @@ export default {
     data() {
         return {
             t: null,
+            error: null,
             edit: {category: null, note: ""},
             categories: ["Billing", "Technical", "Account", "Other"],
             busy: false,
@@ -137,11 +144,18 @@ export default {
     methods: {
         // -------- data I/O --------
         async load() {
-            const {data} = await this.$api.get(`/tickets/${this.$route.params.id}`);
-            this.t = data;
-            this.edit.category = data.category || null;
-            this.edit.note = data.note || "";
-            this.validateAll();
+            this.error = null;
+            this.t = null;
+            try {
+                const { data } = await this.$api.get(`/tickets/${this.$route.params.id}`);
+                this.t = data;
+            } catch (err) {
+                if (err.response && err.response.status === 404) {
+                    this.error = "Ticket not found";
+                } else {
+                    this.error = "Failed to load ticket. Please try again.";
+                }
+            }
         },
         async onCategoryChange() {
             // Live-validate first; only PATCH if valid and changed

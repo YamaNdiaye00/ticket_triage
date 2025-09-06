@@ -86,6 +86,12 @@ class TicketController extends Controller
     // GET /tickets/{id}
     public function show(Ticket $ticket): JsonResponse
     {
+        // Route-model binding already 404s if not found.
+        // Adding a custom message
+        if (!$ticket) {
+            return response()->json(['message' => 'Ticket not found, try a different id.'], 404);
+        }
+
         return response()->json($ticket);
     }
 

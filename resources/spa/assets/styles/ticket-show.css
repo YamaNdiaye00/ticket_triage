@@ -120,3 +120,13 @@
     text-align: center;
     color: #666;
 }
+
+.ticket-show__error {
+    padding: 1rem;
+    background: #ffe7e7;
+    border: 1px solid #ffcccc;
+    border-radius: .5rem;
+    color: #b30000;
+    font-weight: 600;
+    text-align: center;
+}
