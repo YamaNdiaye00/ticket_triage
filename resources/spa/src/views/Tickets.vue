@@ -51,7 +51,6 @@
                         <span v-if="t.explanation" class="ticket-list__info" aria-label="Explanation">
                           <img class="ticket-list__info-icon" src="../../assets/icons/information.png" alt="">
                           <div class="tooltip">
-                            <img class="tooltip__image" src="../../assets/icons/information.png" alt="">
                             <p class="tooltip__text">{{ t.explanation }}</p>
                           </div>
                         </span>
