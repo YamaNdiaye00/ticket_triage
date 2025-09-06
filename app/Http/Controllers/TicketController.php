@@ -7,6 +7,7 @@ use App\Models\Ticket;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class TicketController extends Controller
 {
@@ -122,4 +123,58 @@ class TicketController extends Controller
             'ticket' => $ticket->id,
         ], 202);
     }
+
+    // GET /tickets/export
+    public function export(Request $request): StreamedResponse
+    {
+        $q        = trim((string) $request->query('q', ''));
+        $status   = $request->query('status');
+        $category = $request->query('category');
+
+        $query = Ticket::query()
+            ->when($q !== '', function ($qq) use ($q) {
+                $qq->where(function ($w) use ($q) {
+                    $w->where('subject', 'like', "%{$q}%")
+                        ->orWhere('body', 'like', "%{$q}%");
+                });
+            })
+            ->when($status,   fn($qq) => $qq->where('status',   $status))
+            ->when($category, fn($qq) => $qq->where('category', $category))
+            ->orderByDesc('created_at');
+
+        $filename = 'tickets_export_' . now()->format('Ymd_His') . '.csv';
+
+        $headers = [
+            'Content-Type'        => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+            'Cache-Control'       => 'no-store, no-cache, must-revalidate',
+        ];
+
+        $columns = ['id','created_at','subject','status','category','confidence','note','explanation'];
+
+        return response()->streamDownload(function () use ($query, $columns) {
+            $out = fopen('php://output', 'w');
+            // UTF-8 BOM for Excel compatibility (optional)
+            fprintf($out, chr(0xEF).chr(0xBB).chr(0xBF));
+            fputcsv($out, $columns);
+
+            $query->chunk(100, function ($rows) use ($out, $columns) {
+                foreach ($rows as $t) {
+                    fputcsv($out, [
+                        $t->id,
+                        optional($t->created_at)->toDateTimeString(),
+                        $t->subject,
+                        $t->status,
+                        $t->category,
+                        $t->confidence,
+                        $t->note,
+                        $t->explanation,
+                    ]);
+                }
+            });
+
+            fclose($out);
+        }, $filename, $headers);
+    }
+
 }
