@@ -81,25 +81,26 @@
 
                 <div class="ticket-show__actions">
                     <button
-                        class="ticket-show__btn"
-                        :disabled="busy || !!errors.note || !isNoteDirty"
+                        class="ticket-show__btn ui-btn"
+                        type="button"
+                        :disabled="noteSaving || !noteDirty"
                         @click="saveNote"
-                        title="Save note"
                     >
-                        {{ busy && lastAction === 'note' ? 'Saving…' : 'Save note' }}
+                        Save note
                     </button>
 
                     <button
-                        class="ticket-show__btn"
-                        :disabled="busy || !!errors.category"
-                        @click="runClassify"
-                        title="Run classification"
+                        class="ticket-show__btn ui-btn"
+                        type="button"
+                        :disabled="classifying"
+                        @click="classify(id)"
                     >
-                        {{ busy && lastAction === 'classify' ? 'Classifying…' : 'Run Classification' }}
+                        Run Classification
                     </button>
 
                     <router-link class="ticket-show__link" to="/tickets">Back to list</router-link>
                 </div>
+
             </div>
         </div>
     </section>
@@ -147,7 +148,7 @@ export default {
             this.error = null;
             this.t = null;
             try {
-                const { data } = await this.$api.get(`/tickets/${this.$route.params.id}`);
+                const {data} = await this.$api.get(`/tickets/${this.$route.params.id}`);
                 this.t = data;
             } catch (err) {
                 if (err.response && err.response.status === 404) {

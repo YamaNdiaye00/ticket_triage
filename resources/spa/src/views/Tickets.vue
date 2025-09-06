@@ -31,26 +31,43 @@
                 <div class="ticket-list__subject">{{ t.subject }}</div>
 
                 <div class="ticket-list__meta">
-                    <span class="ticket-list__badge">{{ t.status }}</span>
-                    <span class="ticket-list__badge">{{ t.category || '—' }}</span>
-                    <span class="ticket-list__muted">conf: {{ fmtConf(t.confidence) }}</span>
-                    <span v-if="t.note" class="ticket-list__note-badge">
-                        <img src="../../assets/icons/note.png" alt="Note" class="ticket-list__note-icon"/>
-                            <span class="ticket-list__note-text">Note</span>
-                        </span>
-                    <span v-if="t.explanation" class="ticket-list__info">
-                          <img src="../../assets/icons/information.png" alt="Info" class="ticket-list__info-icon"/>
+                    <!-- 1) Status -->
+                    <div class="ticket-list__meta-cell">
+                        <span class="ticket-list__badge">{{ t.status }}</span>
+                    </div>
+
+                    <!-- 2) Category -->
+                    <div class="ticket-list__meta-cell">
+                        <span class="ticket-list__badge">{{ t.category || '—' }}</span>
+                    </div>
+
+                    <!-- 3) Confidence -->
+                    <div class="ticket-list__meta-cell">
+                        <span class="ticket-list__muted">conf: {{ fmtConf(t.confidence) }}</span>
+                    </div>
+
+                    <!-- 4) Explanation (tooltip icon) -->
+                    <div class="ticket-list__meta-cell">
+                        <span v-if="t.explanation" class="ticket-list__info" aria-label="Explanation">
+                          <img class="ticket-list__info-icon" src="../../assets/icons/information.png" alt="">
                           <div class="tooltip">
-                            <img
-                                v-if="t.image"
-                                :src="t.image"
-                                alt="Ticket related"
-                                class="tooltip__image"
-                            />
+                            <img class="tooltip__image" src="../../assets/icons/information.png" alt="">
                             <p class="tooltip__text">{{ t.explanation }}</p>
                           </div>
-                    </span>
+                        </span>
+                        <span v-else class="ticket-list__meta-placeholder"></span>
+                    </div>
+
+                    <!-- 5) Note badge -->
+                    <div class="ticket-list__meta-cell">
+                        <span v-if="t.note" class="ticket-list__note-badge">
+                          <img class="ticket-list__note-icon" src="../../assets/icons/note.png" alt="">
+                          <span class="ticket-list__note-text">Note</span>
+                        </span>
+                        <span v-else class="ticket-list__meta-placeholder"></span>
+                    </div>
                 </div>
+
 
                 <div class="ticket-list__actions">
                     <router-link class="ticket-list__link" :to="`/tickets/${t.id}`">Open</router-link>

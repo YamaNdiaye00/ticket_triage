@@ -58,33 +58,31 @@
     white-space: nowrap; /* remove this if wrapping preferred */
 }
 
-/* Middle cell */
+/* Middle cell: 5-slot grid */
 .ticket-list__meta {
-    display: flex;
-    flex-wrap: wrap; /* allow badges + text to wrap if needed */
-    justify-content: center; /* horizontally centered */
-    align-items: center; /* vertically centered */
-    gap: .5rem;
-    text-align: center; /* ensures text like confidence aligns nicely */
-    justify-self: center;
+    display: grid;
+    grid-template-columns: 64px 90px 90px 22px 64px; /* status | category | conf | info | note */
+    justify-content: center; /* center the whole group */
+    align-items: center; /* vertical align */
+    column-gap: .5rem;
+    text-align: center;
 }
 
-.ticket-list__badge {
-    background: var(--badge-bg);
-    padding: .15rem .4rem;
-    border-radius: .25rem;
-    font-size: .85rem;
-}
-
+/* Make badges fill their slot width */
+.ticket-list__badge,
 .ticket-list__note-badge {
-    background: var(--note-bg);
-    display: inline-flex; /* align icon + text inline */
+    display: inline-flex;
     align-items: center;
-    gap: .25rem;
-    padding: .15rem .4rem;
-    border-radius: .25rem;
-    font-size: .85rem;
-    font-weight: 500;
+    justify-content: center;
+    width: 100%;
+}
+
+/* Placeholder reserves space when value is missing */
+.ticket-list__meta-placeholder {
+    visibility: hidden; /* invisible but keeps space */
+    display: inline-block;
+    width: 100%;
+    height: 1.4rem;
 }
 
 .ticket-list__note-icon {
