@@ -199,3 +199,47 @@ OPENAI_CLASSIFY_MODEL=gpt-4o-mini
     - Built with Vue 3 Options API.
     - CSS is BEM-compliant and organized per feature (ticket-list, ticket-show, dashboard, modal, etc).
     - Single Vite build, served from Laravel’s `/public/spa` with proper fallback route.  
+
+
+## Assumptions & Trade-offs
+
+- **Category Field**: Kept as a free string (with recommended values like *Billing*, *Technical*, *Account*, *Other*) instead of a strict enum. This allows flexibility for future categories without needing migrations.
+- **AI Classifier**: Assumed classification would be handled by OpenAI. A feature flag (`OPENAI_CLASSIFY_ENABLED`) controls fallback mode (random/dummy classification) for local testing.
+- **Queue & Database**: Defaulted to `database` queue driver and `sqlite` database in `.env.example` for easy setup. In production, a more scalable driver (e.g., Redis, MySQL) would be used.
+- **Strict Types**: Added `declare(strict_types=1);` across the app for stronger type safety, but some type coercion remains in user input handling to avoid breaking Laravel’s request flow.
+- **Frontend Framework**: Vue 3 with Options API (no Composition API, no TypeScript) per the requirements. This limits some modern patterns but keeps the codebase straightforward.
+- **Styling**: Used plain CSS with BEM naming. No frameworks (e.g., Tailwind, Bootstrap) were added to stay compliant with the constraints.
+- **Analytics Scope**: Focused only on core dashboard counters and a single canvas chart. More advanced analytics would be efficient.
+
+---
+
+## What I’d Do With More Time (AI & Analytics)
+
+### AI Enhancements
+- **Refine Classification Prompt**: Add more examples to improve consistency and keep confidence scores between 0–1.
+- **Confidence-Aware UI**: Show a warning or highlight when the AI is not confident, so staff can double-check.
+- **Related Ticket Suggestions**: Use simple keyword search (not full embeddings) to suggest older tickets that might be similar.
+
+### Analytics & Insights
+- **Most Frequent Problems**: Track which categories appear most often in the last 30 days.
+- **Top Issues (Pareto)**: Category frequency with 80/20 visualization; weekly and monthly trend lines to highlight which small set of categories drive most of the problems.
+- **Trend Over Time**: Weekly or monthly counts per category to see if certain issues are increasing.
+- **Top Problem Dashboard Widget**: Add a “Top 3 issues this week” card so support teams can focus on the biggest pain points.
+
+### Example Queries
+**Top categories (last 30 days):**
+```sql
+SELECT category, COUNT(*) AS total
+FROM tickets
+WHERE created_at >= NOW() - INTERVAL 30 DAY
+GROUP BY category
+ORDER BY total DESC;
+```
+
+**Weekly trend by category:**
+```sql
+SELECT category, DATE_FORMAT(created_at, '%x-%v') AS week, COUNT(*) AS total
+FROM tickets
+GROUP BY category, week
+ORDER BY week DESC, total DESC;
+```
