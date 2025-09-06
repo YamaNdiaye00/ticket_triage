@@ -22,7 +22,7 @@
 .dashboard__subtitle {
     margin: 0;
     font-size: 1rem;
-    color: #444;
+    color: var(--muted);
 }
 
 .dashboard__cards {
@@ -32,17 +32,17 @@
 }
 
 .dashboard__card {
-    border: 1px solid #ddd;
+    border: 1px solid var(--border);
     border-radius: .5rem;
     padding: .6rem .75rem;
     min-width: 120px;
     text-align: center;
-    background: #fafafa;
+    background: var(--surface);
 }
 
 .dashboard__card-key {
     font-size: .85rem;
-    color: #666;
+    color: var(--muted);
 }
 
 .dashboard__card-val {
@@ -51,7 +51,7 @@
 }
 
 .dashboard__chart {
-    border: 1px solid #eee;
+    color: var(--muted);
     border-radius: .5rem;
     padding: .75rem;
 }

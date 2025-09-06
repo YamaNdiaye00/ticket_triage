@@ -1,9 +1,93 @@
-/* Global resets & helpers (not BEM) */
+/* Global resets & helpers & theme variables (not BEM) */
+
 * {
     box-sizing: border-box;
 }
 
+:root {
+    --bg: #ffffff;
+    --fg: #111111;
+    --muted: #666666;
+
+    --border: #dddddd;
+    --border-soft: #eeeeee;
+
+    --surface: #fafafa;
+    --surface-2: #f7f7f7;
+
+    --primary: #1a56db;
+
+    --note-bg: #ffe7a3;
+    --badge-bg: #f3f3f3;
+    --tooltip-bg: #ffffff;
+    --tooltip-border: #cccccc;
+
+    --error-bg: #ffe7e7;
+    --error-border: #ffcccc;
+    --error-fg: #b30000;
+
+    --btn-bg: #f7f7f7;
+    --btn-border: #d0d0d0;
+    --btn-fg: #111;
+
+    --input-bg: #fff;
+    --input-border: #ccc;
+    --input-fg: #111;
+    --input-placeholder: #666;
+
+    --btn-disabled-bg: #e0e0e0;
+    --btn-disabled-fg: #999;
+
+    color-scheme: light dark;
+}
+
+:root[data-theme="dark"] {
+    --bg: #0f1115;
+    --fg: #e6e6e6;
+    --muted: #a7a7a7;
+
+    --border: #2b2f36;
+    --border-soft: #22262c;
+
+    --surface: #171a21;
+    --surface-2: #1d2129;
+
+    --primary: #7aa7ff;
+
+    --note-bg: #3c3214;
+    --badge-bg: #23262d;
+    --tooltip-bg: #1b1f27;
+    --tooltip-border: #2a2f36;
+
+    --error-bg: #3b1717;
+    --error-border: #5a2a2a;
+    --error-fg: #ffb3b3;
+
+    --btn-bg: #1d2129;
+    --btn-border: #2b2f36;
+    --btn-fg: #e6e6e6;
+
+    --input-bg: #171a21;
+    --input-border: #2b2f36;
+    --input-fg: #e6e6e6;
+    --input-placeholder: #a7a7a7;
+
+    --btn-disabled-bg: #2b2f36;
+    --btn-disabled-fg: #555;
+}
+
 body {
     margin: 0;
+    background: var(--bg);
+    color: var(--fg);
     font-family: system-ui, Arial, sans-serif;
+}
+
+a {
+    color: var(--primary);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
 }

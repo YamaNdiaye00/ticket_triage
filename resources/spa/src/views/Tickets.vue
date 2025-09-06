@@ -16,7 +16,7 @@
                 <option value="">All categories</option>
                 <option v-for="c in categories" :key="c" :value="c">{{ c }}</option>
             </select>
-            <button class="ticket-list__new" @click="showNew = true">New Ticket</button>
+            <button class="ticket-list__new ui-btn" @click="showNew = true">New Ticket</button>
         </div>
 
         <!-- List -->
@@ -39,7 +39,7 @@
                             <span class="ticket-list__note-text">Note</span>
                         </span>
                     <span v-if="t.explanation" class="ticket-list__info">
-                          <img src="../../assets/icons/tooltip.png" alt="Info" class="ticket-list__info-icon"/>
+                          <img src="../../assets/icons/information.png" alt="Info" class="ticket-list__info-icon"/>
                           <div class="tooltip">
                             <img
                                 v-if="t.image"
@@ -54,7 +54,9 @@
 
                 <div class="ticket-list__actions">
                     <router-link class="ticket-list__link" :to="`/tickets/${t.id}`">Open</router-link>
-                    <button class="ticket-list__btn" :disabled="loadingId===t.id" @click="classify(t.id)">
+                    <button class="ticket-list__btn ui-btn"
+                            :disabled="loadingId===t.id"
+                            @click="classify(t.id)">
                         {{ loadingId === t.id ? 'Classifying…' : 'Classify' }}
                     </button>
                 </div>
@@ -63,25 +65,40 @@
 
         <!-- Pagination -->
         <div class="ticket-list__pager" v-if="meta && meta.last_page > 1">
-            <button :disabled="page<=1" @click="goto(page-1)">Prev</button>
-            <span>Page {{ meta.current_page }} / {{ meta.last_page }}</span>
-            <button :disabled="page>=meta.last_page" @click="goto(page+1)">Next</button>
+            <button class="ticket-list__pager-btn ui-btn ui-btn--sm"
+                    :disabled="page<=1"
+                    @click="goto(page-1)">Prev
+            </button>
+
+            <span class="ticket-list__pager-info">
+                Page {{ meta.current_page }} / {{ meta.last_page }}
+            </span>
+
+            <button class="ticket-list__pager-btn ui-btn ui-btn--sm"
+                    :disabled="page>=meta.last_page"
+                    @click="goto(page+1)">Next
+            </button>
         </div>
 
         <!-- New Ticket modal (no UI libs) -->
         <div v-if="showNew" class="modal">
             <div class="modal__dialog">
                 <h3 class="modal__title">New Ticket</h3>
+
                 <form @submit.prevent="create">
                     <label class="modal__label">Subject
                         <input class="modal__input" v-model.trim="form.subject" maxlength="200" required/>
                     </label>
+
                     <label class="modal__label">Body
-                        <textarea class="modal__textarea" v-model.trim="form.body" required></textarea>
+                        <textarea class="modal__textarea" v-model.trim="form.body" rows="4" required></textarea>
                     </label>
+
                     <div class="modal__actions">
-                        <button type="button" @click="showNew=false">Cancel</button>
-                        <button type="submit">Create</button>
+                        <button type="button" class="modal__btn ui-btn ui-btn--ghost" @click="showNew=false">Cancel
+                        </button>
+                        <button type="submit" class="modal__btn ui-btn" :disabled="!form.subject || !form.body">Create
+                        </button>
                     </div>
                 </form>
             </div>
@@ -91,7 +108,7 @@
 
 <script>
 // Options API: data() returns reactive state; methods are component functions.
-// We use this.$api (registered in main.js) to call the Laravel API.
+// Using this.$api (registered in main.js) to call the Laravel API.
 export default {
     name: "Tickets",
     data() {
