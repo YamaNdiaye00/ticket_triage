@@ -5,8 +5,8 @@
     justify-content: space-between;
     gap: 1rem;
     padding: .75rem 1rem;
-    border-bottom: 1px solid #e5e5e5;
-    background: #fff;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);;
 }
 
 /* Elements */
@@ -36,11 +36,7 @@
 }
 
 .app-header__btn {
-    padding: .35rem .6rem;
-    border: 1px solid #d0d0d0;
-    border-radius: .5rem;
-    background: #f7f7f7;
-    cursor: pointer;
+    padding: 0;
 }
 
 .app-header__btn:disabled {

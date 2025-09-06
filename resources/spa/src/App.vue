@@ -5,7 +5,8 @@
             <nav class="app-header__nav" aria-label="Primary">
                 <router-link class="app-header__link" to="/dashboard">Dashboard</router-link>
                 <router-link class="app-header__link" to="/tickets">Tickets</router-link>
-                <button class="app-header__btn" @click="showExport = true">Export CSV</button>
+                <button class="app-header__btn ui-btn" @click="showExport = true">Export CSV</button>
+                <ThemeToggle/>
             </nav>
         </header>
 
@@ -25,10 +26,11 @@
 
 import ExportCsvModal from "./components/ExportCsvModal.vue";
 import {exportTicketsCsv} from "../utils/exportCsv";
+import ThemeToggle from "@/components/ThemeToggle.vue";
 
 export default {
     name: "App",
-    components: {ExportCsvModal},
+    components: {ThemeToggle, ExportCsvModal},
     data() {
         return {showExport: false};
     },

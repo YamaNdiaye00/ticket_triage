@@ -9,8 +9,16 @@
     margin-bottom: 1rem;
 }
 
-.ticket-list__search, .ticket-list__select {
+.ticket-list__search,
+.ticket-list__select {
     padding: .5rem;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    color: var(--input-fg);
+}
+
+.ticket-list__search::placeholder {
+    color: var(--input-placeholder);
 }
 
 .ticket-list__items {
@@ -22,7 +30,7 @@
 }
 
 .ticket-list__item {
-    border: 1px solid #ddd;
+    border: 1px solid var(--border);
     padding: .75rem;
     border-radius: .5rem;
 
@@ -47,36 +55,34 @@
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap; /* remove this if you prefer wrapping */
+    white-space: nowrap; /* remove this if wrapping preferred */
 }
 
-/* Middle cell */
+/* Middle cell: 5-slot grid */
 .ticket-list__meta {
-    display: flex;
-    flex-wrap: wrap; /* allow badges + text to wrap if needed */
-    justify-content: center; /* horizontally centered */
-    align-items: center; /* vertically centered */
-    gap: .5rem;
-    text-align: center; /* ensures text like confidence aligns nicely */
-    justify-self: center;
+    display: grid;
+    grid-template-columns: 64px 90px 90px 22px 64px; /* status | category | conf | info | note */
+    justify-content: center; /* center the whole group */
+    align-items: center; /* vertical align */
+    column-gap: .5rem;
+    text-align: center;
 }
 
-.ticket-list__badge {
-    background: #f3f3f3;
-    padding: .15rem .4rem;
-    border-radius: .25rem;
-    font-size: .85rem;
-}
-
+/* Make badges fill their slot width */
+.ticket-list__badge,
 .ticket-list__note-badge {
-    background: #ffe7a3; /* yellow highlight */
-    display: inline-flex; /* align icon + text inline */
+    display: inline-flex;
     align-items: center;
-    gap: .25rem;
-    padding: .15rem .4rem;
-    border-radius: .25rem;
-    font-size: .85rem;
-    font-weight: 500;
+    justify-content: center;
+    width: 100%;
+}
+
+/* Placeholder reserves space when value is missing */
+.ticket-list__meta-placeholder {
+    visibility: hidden; /* invisible but keeps space */
+    display: inline-block;
+    width: 100%;
+    height: 1.4rem;
 }
 
 .ticket-list__note-icon {
@@ -90,7 +96,7 @@
 }
 
 .ticket-list__muted {
-    color: #666;
+    color: var(--muted);
     font-size: .85rem;
 }
 
@@ -107,6 +113,11 @@
     align-items: center;
     justify-content: center;
     margin-top: 1rem;
+}
+
+.ticket-list__pager-info {
+    font-weight: 600;
+    color: var(--fg);
 }
 
 .ticket-list__info {
@@ -128,10 +139,10 @@
     bottom: 125%; /* show above the icon */
     left: 50%;
     transform: translateX(-50%);
-    background: #fff;
-    color: #333;
+    background: var(--tooltip-bg);
+    color: var(--fg);
     padding: .5rem;
-    border: 1px solid #ccc;
+    border: 1px solid var(--tooltip-border);
     border-radius: .25rem;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
     white-space: normal;
@@ -149,7 +160,7 @@
     transform: translateX(-50%);
     border-width: 6px;
     border-style: solid;
-    border-color: #fff transparent transparent transparent;
+    border-color: var(--tooltip-bg) transparent transparent transparent;
 }
 
 .tooltip__image {
@@ -169,4 +180,3 @@
 .ticket-list__info:hover .tooltip {
     display: block;
 }
-
